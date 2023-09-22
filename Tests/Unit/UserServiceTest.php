@@ -17,8 +17,11 @@ class UserServiceTest extends TestCase
     }
     /**
      * A basic test example.
+     * 
+     * 
+     * @test
      */
-    public function shouldFetchUserById(): void
+    public function test_should_fetch_user_by_id(): void
     {
         $user = User::create(['username' => 'admin']);
 
