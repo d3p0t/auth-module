@@ -1,10 +1,10 @@
 {
-    "name": "nwidart/auth",
+    "name": "d3p0t/auth",
     "description": "",
     "authors": [
         {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
+            "name": "Pascal Wilbrink",
+            "email": "pascal.wilbrink@gmail.com"
         }
     ],
     "extra": {
