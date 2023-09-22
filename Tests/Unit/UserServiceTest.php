@@ -23,7 +23,9 @@ class UserServiceTest extends TestCase
      */
     public function test_should_fetch_user_by_id(): void
     {
-        $user = User::create(['username' => 'admin']);
+        $user = new User();
+        $user->username = 'admin';
+        $user = $user->save();
 
         $res = $this->sut->getUserById($user->id);
 
