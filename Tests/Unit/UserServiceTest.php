@@ -2,8 +2,9 @@
 
 namespace Tests\Unit;
 
-use Modules\User\Services\UserService;
+use Modules\Auth\Services\UserService;
 use PHPUnit\Framework\TestCase;
+use Modules\Auth\Entities\User;
 
 class UserServiceTest extends TestCase
 {

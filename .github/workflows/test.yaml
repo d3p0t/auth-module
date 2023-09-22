@@ -81,7 +81,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:^${{ matrix.laravel }}" "orchestra/testbench:^${{ matrix.testbench }}" "mockery/mockery:^1.3.2" --no-interaction --no-update
+          composer require "laravel/framework:^${{ matrix.laravel }}" "orchestra/testbench:^${{ matrix.testbench }}" "mockery/mockery:^1.3.2" "spatie/laravel-permission" --no-interaction --no-update
           composer update --prefer-${{ matrix.dependency-version }} --prefer-dist --no-interaction
       - name: Execute tests
         run: vendor/bin/phpunit --testdox
