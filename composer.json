@@ -13,7 +13,6 @@
         "laravel": {
             "providers": [],
             "aliases": {
-
             }
         }
     },
@@ -23,7 +22,8 @@
         }
     },
     "require": {
-        "joshbrw/laravel-module-installer": "^2.0"
+        "joshbrw/laravel-module-installer": "^2.0",
+        "spatie/laravel-permission": "*",
     },
     "config": {
         "allow-plugins": {
