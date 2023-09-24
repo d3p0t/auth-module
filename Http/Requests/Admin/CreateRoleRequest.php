@@ -1,9 +1,10 @@
 <?php
 
-namespace Modules\Auth\Http\Requests;
+namespace Modules\Auth\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Modules\Auth\Entities\Role;
 
 class CreateRoleRequest extends FormRequest
 {
@@ -34,5 +35,17 @@ class CreateRoleRequest extends FormRequest
         $this->merge([
             'permissions' => $this->input('permissions', []),
         ]);
+    }
+
+    public function toRole(): Role {
+        $role = new Role([
+            'name'  => $this->validated('name')
+        ]);
+
+        return $role;
+    }
+
+    public function toPermissions(): Array {
+        return $this->validated(['permissions']);
     }
 }

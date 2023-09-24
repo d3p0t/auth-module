@@ -2,14 +2,15 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use App\Models\User;
+use Modules\Auth\Entities\User;
 use App\Providers\RouteServiceProvider;
 use Carbon\Carbon;
 use Hash;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\AdminController as Controller;
+use Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Http\Requests\ResetPasswordRequest;
 use Modules\Auth\Services\AuthService;
 
-class AuthController extends Controller
+abstract class AuthController extends Controller
 {
 
     private AuthService $authService;
@@ -35,8 +36,13 @@ class AuthController extends Controller
         if ($this->authService->getCurrentUser()) {
             return redirect()->to(RouteServiceProvider::HOME);
         }
-        return view('auth::login');
+        return view($this->loginPage());
     }
+
+    abstract function loginPage(): string;
+    abstract function forgotPasswordPage(): string;
+    abstract function resetPasswordPage(): string;
+    abstract function resetPasswordRedirect(): string;
 
     /**
      * Tries to login the user
@@ -57,10 +63,11 @@ class AuthController extends Controller
             )
         ) {
             $request->session()->regenerate();
+
+            $request->session()->put('locale', $this->authService->getCurrentUser()->locale);
+
             return redirect()->to($validated['redirect']);
         }
-
-
 
         return back()->withErrors([
             'username' => 'Invalid credentials'
@@ -91,7 +98,7 @@ class AuthController extends Controller
         if ($this->authService->getCurrentUser()) {
             return redirect()->back();
         }
-        return view('auth::forgot-password');
+        return view($this->forgotPasswordPage());
     }
 
     public function forgotPassword(Request $request) {
@@ -112,12 +119,12 @@ class AuthController extends Controller
         }
 
         if ($this->checkToken($token, $request->input('email'))) {
-            return view('auth::reset-password', [
+            return view($this->resetPasswordPage(), [
                 'token' => $token
             ]);
         }
 
-        return view('auth::reset-password', [
+        return view($this->resetPasswordPage(), [
             'error' => 'Token has already been used'
         ]);
     }
@@ -125,8 +132,7 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request) {
         $validated = $request->validated();
 
-        
-        $status = Password::reset($validated, function(User $user, string $password) {
+        $status = Password::reset($validated, function(User $user) {
 
             $user->setRememberToken(Str::random(60));
 
@@ -136,18 +142,11 @@ class AuthController extends Controller
         });
 
         return $status === Password::PASSWORD_RESET
-            ? redirect('auth/login')->with('status', __($status))
+            ? redirect($this->resetPasswordRedirect())->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
-
     }
 
-    public function showProfile() {
-        return view('auth::profile', [
-            'user'  => $this->authService->getCurrentUser()
-        ]);
-    }
-
-    private function checkToken($token,$email): bool
+    private function checkToken(string $token, string $email): bool
     {
 
         $password_resets = DB::table('password_reset_tokens')->where('email', $email)->first();

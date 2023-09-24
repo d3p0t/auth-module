@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.public.master')
 
 @section('content') 
     <section class="auth">
@@ -9,17 +9,7 @@
                     {{ session('status') }}
                 </x-alert>
             @endif
-
-            <form method="POST" action="/auth/login">
-                @csrf
-
-                <x-input name="username" type="text" label="Username"></x-input>
-                <x-input name="password" type="password" label="Password"></x-input>
-
-                <button type="submit" class="button button--primary">
-                    Login
-                </button>
-            </form>
+            @include('auth::partials.login', ['action' => '/auth/login'])
         </x-card>
         <div class="actions">
             <a href="/auth/forgot-password">Forgot password ? </a>

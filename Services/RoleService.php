@@ -2,11 +2,14 @@
 
 namespace Modules\Auth\Services;
 
+use App\Exceptions\ModelValidationException;
 use App\Pageable\Pageable;
 use App\Pageable\PageRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Spatie\Permission\Models\Role;
+use Illuminate\Validation\ValidationException;
+use Modules\Auth\Entities\Role;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleService {
 
@@ -65,34 +68,55 @@ class RoleService {
      * 
      * @return Role
      */
-    public function createRole(String $name, Array $permissions): Role {
-        $role = new Role([
-            'name'  => $name
-        ]);
-
-        $role->save();
-
-        $role->syncPermissions($permissions);
-
-        return $role;
+    public function createRole(Role $role, Array $permissions): Role {
+        try {
+            if ($role->save()) {
+                $role->syncPermissions($permissions);
+                return $role;
+            }
+            throw new HttpException(500, "Error saving role");
+        } catch (ValidationException $e) {
+            throw new ModelValidationException($e, $role);
+        }
+        throw new HttpException(500, 'Could not create role');
     }
 
     /**
-     * @param int $id
-     * @param String $name
+     * @param Role $role
      * @param Array $permissions
      * 
      * @return Role
      */
-    public function updateRole(int $id, String $name, Array $permissions): Role {
+    public function updateRole(Role $role, Array $permissions): Role {
+        try {
+            if ($this->getById($role->id)->update([
+                'name'  => $role->name
+            ])) {
+                $this->getById($role->id)->syncPermissions($permissions);
+                return $role;
+            }
+            throw new HttpException(500, 'Could not update role');
+
+        } catch (ValidationException $e) {
+            throw new ModelValidationException($e, $role);
+        }
+        throw new HttpException(500, 'Could not update role');
+
+    }
+
+    /**
+     * @param int $id
+     * 
+     * @return bool
+     */
+    public function deleteRole(int $id): bool {
         $role = $this->getById($id);
 
-        $role->name = $name;
+        if (!$role->users->isEmpty()) {
+            throw new HttpException(500, 'Cannot delete role that is assigned to users');
+        }
 
-        $role->save();
-        $role->syncPermissions($permissions);
-
-        return $role;
+        return $role->delete();
     }
 
 }

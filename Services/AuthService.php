@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Services;
 
-use App\Models\User;
+use Modules\Auth\Entities\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 

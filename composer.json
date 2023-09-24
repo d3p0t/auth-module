@@ -1,6 +1,7 @@
 {
     "name": "d3p0t/auth",
-    "description": "",
+    "description": "Auth Module",
+    "type": "laravel-module",
     "authors": [
         {
             "name": "Pascal Wilbrink",
@@ -18,6 +19,14 @@
     "autoload": {
         "psr-4": {
             "Modules\\Auth\\": ""
+        }
+    },
+    "require": {
+        "joshbrw/laravel-module-installer": "^2.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "joshbrw/laravel-module-installer": true
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Modules\Auth\Services;
 
-use Spatie\Permission\Models\Permission;
+use Modules\Auth\Entities\Permission;
 
 class PermissionService {
 

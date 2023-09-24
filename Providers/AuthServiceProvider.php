@@ -2,7 +2,9 @@
 
 namespace Modules\Auth\Providers;
 
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
+use Modules\Auth\Entities\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $moduleNameLower = 'auth';
 
+
     /**
      * Boot the application events.
      *
@@ -27,6 +30,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
+        $this->registerAuthConfig();
     }
 
     /**
@@ -37,6 +41,7 @@ class AuthServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->register(PolicyServiceProvider::class);
     }
 
     /**
@@ -91,13 +96,30 @@ class AuthServiceProvider extends ServiceProvider
     }
 
     /**
+     * Register Auth configuration
+     * 
+     * @return void
+     */
+    public function registerAuthConfig()
+    {
+        ResetPassword::createUrlUsing(function (User $user, string $token) {
+            if (request()->is('admin/*')) {
+                return route('admin.password-reset', ['token' => $token, 'email' => $user->email]);
+            } else {
+                return route('public.password-reset', ['token' => $token, 'email' => $user->email]);
+            }            
+        });
+    }
+
+    /**
      * Get the services provided by the provider.
      *
      * @return array
      */
     public function provides()
     {
-        return [];
+        return [
+        ];
     }
 
     private function getPublishableViewPaths(): array

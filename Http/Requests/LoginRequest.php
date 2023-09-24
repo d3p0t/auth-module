@@ -39,7 +39,7 @@ class LoginRequest extends FormRequest
         ]);
 
         $this->merge([
-            'redirect'  => isset($this->redirect) ? $this->redirect : RouteServiceProvider::HOME
+            'redirect'  => $this->input('redirect', RouteServiceProvider::HOME)
         ]);
     }
 

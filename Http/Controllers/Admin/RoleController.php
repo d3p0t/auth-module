@@ -6,11 +6,12 @@ use App\Http\Controllers\AdminController as Controller;
 use App\Http\Requests\PageableRequest;
 use App\Http\Requests\SortableRequest;
 use App\Pageable\PageRequest;
-use Illuminate\Support\Facades\Auth;
-use Modules\Auth\Http\Requests\CreateRoleRequest;
-use Modules\Auth\Http\Requests\EditRoleRequest;
+use Gate;
+use Modules\Auth\Http\Requests\Admin\CreateRoleRequest;
+use Modules\Auth\Http\Requests\Admin\EditRoleRequest;
 use Modules\Auth\Services\PermissionService;
 use Modules\Auth\Services\RoleService;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RoleController extends Controller
 {
@@ -22,7 +23,6 @@ class RoleController extends Controller
     {
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
-
     }
 
     public function index(
@@ -31,38 +31,33 @@ class RoleController extends Controller
     ) {
         $searchCriteria = [];
 
-        $pageable = $this->roleService->searchRoles(
-            $searchCriteria,
-            PageRequest::fromRequest($pageableRequest, $sortableRequest)
-        );
-
         return view(
             'auth::admin/roles/index',
             [
-                'roles' => $pageable,
-                'menu'  => $this->getMenu()
+                'roles' => $this->roleService->searchRoles(
+                    $searchCriteria,
+                    PageRequest::fromRequest($pageableRequest, $sortableRequest)
+                )
             ]
         );
     }
 
 
     public function create() {
-        $permissions = $this->permissionService->getPermissions();
-
         return view(
             'auth::admin/roles/create',
             [
-                'menu'  => $this->getMenu(),
-                'permissions'   => $permissions
+                'permissions'   => $this->permissionService->getPermissions()
             ]
         );
     }
 
     public function edit(int $id) {
+        Gate::authorize('update', $this->roleService->getById($id));
+
         return view(
             'auth::admin/roles/edit',
             [
-                'menu'          => $this->getMenu(),
                 'role'          => $this->roleService->getById($id),
                 'permissions'   => $this->permissionService->getPermissions()
             ]
@@ -70,28 +65,36 @@ class RoleController extends Controller
     }
 
     public function store(CreateRoleRequest $request) {
-        $validated = $request->validated();
+        $role = $this->roleService->createRole(
+            $request->toRole(),
+            $request->toPermissions()
+        );
 
-        $role = $this->roleService->createRole($validated['name'], $validated['permissions']);
-
+        return redirect()
+            ->route('auth::admin.roles.index')
+            ->with('status', __('auth::roles.action.created', ['name' => $role->name]));
     }
 
     public function update(EditRoleRequest $request) {
-        $validated = $request->validated();
 
         $role = $this->roleService->updateRole(
-            $validated['id'], 
-            $validated['name'], 
-            $validated['permissions']
+            $request->toRole(),
+            $request->toPermissions()
+    
         );
 
-        return redirect('/auth/admin/roles')
-            ->with('status', 'Role updated');
-
+        return redirect()
+            ->route('auth::admin.roles.index')
+            ->with('status', __('auth::roles.actions.updated', ['name' => $role->name]));
     }
 
     public function delete(int $id) {
-
+        if ($this->roleService->deleteRole($id)) {
+            return redirect()
+                ->route('auth::admin.roles.index')
+                ->with('status', __('auth::roles.actions.deleted'));
+        }
+        throw new HttpException(500, 'Could not delete role');
     }
 
 }

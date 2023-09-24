@@ -14,8 +14,11 @@ class AuthDatabaseSeeder extends Seeder
      */
     public function run()
     {
+        dd('SEEDING');
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+         $this->call([
+            PermissionsSeederTableSeeder::class
+         ]);
     }
 }

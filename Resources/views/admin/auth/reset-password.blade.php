@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.admin.auth')
 
 @section('content')
     <section class="auth">
@@ -10,7 +10,7 @@
                     {{ $error }}
                 </x-alert>
             @else
-                <form method="POST" action="/auth/reset-password">
+                <form method="POST" action="/admin/auth/reset-password">
                     @csrf
 
                     <x-input name="email" type="email" id="email" label="Email"></x-input>
@@ -25,7 +25,7 @@
             @endif
         </x-card>
         <div class="actions">
-            <a href="/auth/login">
+            <a href="/admin/auth/login">
                 Back to login
             </a>
         </div>

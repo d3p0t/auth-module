@@ -3,6 +3,12 @@
 namespace Modules\Auth\Http\Controllers\Admin;
 
 use App\Http\Controllers\AdminController as Controller;
+use App\Http\Requests\PageableRequest;
+use App\Http\Requests\SortableRequest;
+use App\Pageable\PageRequest;
+use Modules\Auth\Http\Requests\Admin\CreateUserRequest;
+use Modules\Auth\Http\Requests\Admin\EditUserRequest;
+
 use Modules\Auth\Services\RoleService;
 use Modules\Auth\Services\UserService;
 
@@ -18,53 +24,68 @@ class UserController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function index() {
+    public function index(
+        PageableRequest $pageableRequest,
+        SortableRequest $sortableRequest
+    ) {
         return view(
-            'auth::admin/users/index', 
+            'auth::admin/users/index',
             [
-                'users' => $this->userService->getUsers(),
-                'menu' => $this->getMenu()
+                'users' => $this->userService->searchUsers(
+                    [],
+                    PageRequest::fromRequest($pageableRequest, $sortableRequest)
+                )
             ]
         );
     }
 
     public function create() {
-        $roles = $this->roleService->all();
-
         return view(
             'auth::admin/users/create',
             [
-                'menu'  => $this->getMenu(),
-                'roles' => $roles
+                'roles' => $this->roleService->all()
             ]
         );
     }
 
+    public function store(CreateUserRequest $request) {
+        $user = $this->userService->createUser(
+            $request->toUser(),
+            $this->roleService->getById($request->toRole())
+        );
 
-    public function store() {
-
+        return redirect('/admin/auth/users')
+            ->with('status', __('auth::users.actions.created', ['username' => $user->username]));
     }
 
     public function edit(int $id) {
-        $user = $this->userService->getUserById($id);
-        $roles = $this->roleService->all();
-
         return view(
             'auth::admin/users/edit',
             [
-                'menu'          => $this->getMenu(),
-                'user'          => $user,
-                'roles'         => $roles
+                'user'          => $this->userService->getUserById($id),
+                'roles'         => $this->roleService->all()
             ]
-            );
+        );
     }
 
-    public function update() {
+    public function update(EditUserRequest $request) {
+        $user = $this->userService->updateUser(
+            $request->toUser(),
+            $this->roleService->getById($request->toRole())
+        );
 
+        return redirect('/admin/auth/users')
+            ->with('status', __('auth::users.actions.updated', ['username' => $user->username]));
     }
 
     public function delete(int $id) {
+        if (!$this->userService->deleteUser($id)) {
+            return redirect('/admin/auth/users')
+                ->withErrors('status', 'Cannot delete user');
+        }
 
+        return redirect('/admin/auth/users')
+            ->with('status', __('auth::users.action.deleted'));
     }
 
 }
