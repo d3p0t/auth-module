@@ -29,5 +29,6 @@
         "allow-plugins": {
             "joshbrw/laravel-module-installer": true
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
