@@ -2,6 +2,7 @@
     "name": "d3p0t/auth",
     "description": "Auth Module",
     "type": "laravel-module",
+    "version": "0.0.1",
     "authors": [
         {
             "name": "Pascal Wilbrink",
