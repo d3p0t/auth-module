@@ -1,5 +1,5 @@
 {
-    "name": "d3p0t/auth",
+    "name": "d3p0t/auth-module",
     "description": "Auth Module",
     "type": "laravel-module",
     "version": "0.0.1",
