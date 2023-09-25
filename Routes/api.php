@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Modules\Auth\Http\Controllers\Api\PermissionController;
+use Modules\Auth\Http\Controllers\Api\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,11 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/auth', function (Request $request) {
-    return $request->user();
+
+Route::prefix('auth')->group(function() {
+    Route::apiResource('roles', RoleController::class);
+    Route::apiResource('permissions', PermissionController::class)
+        ->except(['create', 'store', 'update', 'destroy']);
 });
+
+

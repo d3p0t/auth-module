@@ -23,7 +23,8 @@
     },
     "require": {
         "joshbrw/laravel-module-installer": "^2.0",
-        "spatie/laravel-permission": "*"
+        "spatie/laravel-permission": "*",
+        "laravel/passport": "^11.9"
     },
     "config": {
         "allow-plugins": {

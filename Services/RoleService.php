@@ -59,7 +59,7 @@ class RoleService {
      * @return Role
      */
     public function getById(int $id): Role {
-        return Role::findOrFail($id);
+        return Role::with('permissions')->findOrFail($id);
     }
 
     /**
@@ -70,6 +70,8 @@ class RoleService {
      */
     public function createRole(Role $role, Array $permissions): Role {
         try {
+            $role->guard_name = 'web';
+            $role->is_internal = false;
             if ($role->save()) {
                 $role->syncPermissions($permissions);
                 return $role;

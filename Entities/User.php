@@ -5,18 +5,22 @@ namespace Modules\Auth\Entities;
 use Enigma\ValidatorTrait;
 use Modules\Auth\Notifications\ResetPassword;
 use Modules\Core\Entities\Principal;
+use Laravel\Passport\HasApiTokens;
+
 
 class User extends Principal
 {
 
-    use ValidatorTrait;
+    use ValidatorTrait, HasApiTokens;
+
+    protected String $table = 'auth__users';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
+    protected Array $fillable = [
         'id',
         'username',
         'name',
@@ -29,7 +33,7 @@ class User extends Principal
      *
      * @var array<int, string>
      */
-    protected $hidden = [
+    protected Array $hidden = [
         'password',
         'remember_token',
     ];
@@ -39,7 +43,7 @@ class User extends Principal
      *
      * @var array<string, string>
      */
-    protected $casts = [
+    protected Array $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
@@ -81,6 +85,11 @@ class User extends Principal
         $url = $this->can('admin') ? route('admin.password-reset', $params) : route('public.password-reset', $params);
 
         $this->notify(new ResetPassword($url));
+    }
+
+    public function findForPassport(string $username): User
+    {
+        return $this->where('username', $username)->first();
     }
 }
 
