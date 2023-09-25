@@ -62,7 +62,7 @@ class ModuleServiceProvider extends ServiceProvider
             __DIR__.'/../Config/permission.php' => config_path('permission.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            __DIR__.'/../Config/permission.php', 'auth'
+            __DIR__.'/../Config/permission.php', 'permission'
         );
     }
 
