@@ -31,7 +31,7 @@
         "joshbrw/laravel-module-installer": "^2.0",
         "spatie/laravel-permission": "*",
         "laravel/passport": "^11.9",
-        "d3p0t/core": "1.0.0"
+        "d3p0t/core": "*"
     },
     "config": {
         "allow-plugins": {
