@@ -1,4 +1,4 @@
-@extends('layouts.admin.admin')
+@extends('layouts.admin.app')
 
 @section('content')
     <style>
@@ -12,9 +12,11 @@
             {{ __('auth::roles.edit.title') }}
         </h1>
         <div class="page__actions">
-            <x-button type="link" color="primary" href="{{ route('auth::admin.roles.index') }}">
-                {{ __('auth::roles.edit.back_to_overview') }}
-            </x-button>
+            <a href="{{ route('auth::admin.roles.index') }}">
+                <mwc-button raised color="primary">
+                    {{ __('auth::roles.edit.back_to_overview') }}
+                </mwd-button>
+            </a>
         </div>
         <div class="page__content">
             <x-card>
@@ -27,22 +29,20 @@
                     <div class="permissions">
                         @foreach ($permissions as $permission)
                             <div class="form-field">
-                                <label for="permission-{{ $permission->id }}">
-                                <input 
-                                    class="form-control"
-                                    type="checkbox"
-                                    name="permissions[]"
-                                    id="permission-{{ $permission->id }}"
-                                    value="{{ $permission->id }}"
-                                    {{ $role->can($permission->name) ? 'checked' : null }}
-                                    />
-                                    {{ $permission->name }}
+                                <mwc-formfield label="{{ $permission->name }}">
+                                    <mwc-checkbox 
+                                        name="permissions[]"
+                                        id="permission-{{ $permission->id }}"
+                                        value="{{ $permission->id }}"
+                                        {{ $role->permissions->pluck('name')->contains($permission->name) ? 'checked' : null }}
+                                        ></mwc-checkbox>
+                                </mwc-formfield>
                             </div>
                         @endforeach
                     </div>
-                    <x-button type="submit" color="primary">
+                    <mwc-button raised type="submit" color="primary" onclick="event.target.closest('form').submit()">
                         {{ __('common.save') }}
-                    </x-button>
+                    </mwc-button>
                 </form>
             </x-card>
         </div>

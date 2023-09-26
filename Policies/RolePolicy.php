@@ -33,6 +33,5 @@ class RolePolicy
         }
 
         return Response::allow();
-
     }
 }

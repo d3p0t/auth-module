@@ -3,6 +3,12 @@
     "description": "Auth Module",
     "type": "laravel-module",
     "version": "1.0.0",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/d3p0t/core"
+        }
+    ],
     "authors": [
         {
             "name": "Pascal Wilbrink",
@@ -24,7 +30,8 @@
     "require": {
         "joshbrw/laravel-module-installer": "^2.0",
         "spatie/laravel-permission": "*",
-        "laravel/passport": "^11.9"
+        "laravel/passport": "^11.9",
+        "d3p0t/core": "1.0.0"
     },
     "config": {
         "allow-plugins": {

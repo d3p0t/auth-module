@@ -1,37 +1,46 @@
-@extends('layouts.admin.admin')
+@extends('layouts.admin.app')
 
 @section('content')
+    <style>
+        .permissions {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+        }
+    </style>
     <section class="page">
         <h1 class="page__title">
             {{ __('auth::roles.create.title') }}
         </h1>
         <div class="page__actions">
-            <x-button type="link" color="primary" href="{{ route('auth::admin.roles.index') }}">
-                {{ __('auth::roles.create.back_to_overview') }}
-            </x-button>
+            <a href="{{ route('auth::admin.roles.index') }}">
+                <mwc-button raised olor="primary">
+                    {{ __('auth::roles.create.back_to_overview') }}
+                </mwc-button>
+            </a>
         </div>
         <div class="page__content">
             <x-card>
                 <form method="POST" action="{{ route('auth::admin.roles.store') }}">
                     @csrf
                     <x-input name="name" type="text" label="Name" />
-                    @foreach ($permissions as $permission)
-                        <div class="form-field">
-                            <label for="permission-{{ $permission->id }}">
-                                {{ $permission->name }}
-                            <input 
-                                class="form-control"
-                                type="checkbox"
-                                name="permissions[]"
-                                value="{{ $permission->id }}"
-                                id="permission-{{ $permission->id }}"
-                                />
-                        </div>
-                    @endforeach
+                    <h4>
+                        {{ __('auth::roles.create.form.permissions') }}
+                    </h4>
+                    <div class="permissions">
+                        @foreach ($permissions as $permission)
+                            <mwc-formfield label="{{ $permission->name }}">
+                                <mwc-checkbox 
+                                    name="permissions[]"
+                                    value="{{ $permission->id }}"
+                                    id="permission-{{ $permission->id }}"
+                                    ></mwc-checkbox>
+                            </mwc-formfield>
+                        @endforeach
+                    </div>
 
-                    <x-button type="submit" color="primary">
+                    <mwc-button raised type="submit" color="primary">
                         Save
-                    </x-button>
+                    </mwc-button>
                 </form>
             </x-card>
         </div>

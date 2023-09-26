@@ -2,71 +2,87 @@
 
 namespace Modules\Auth\Http\Controllers;
 
-use Modules\Auth\Entities\User;
-use App\Providers\RouteServiceProvider;
-use Carbon\Carbon;
-use Hash;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Support\Renderable;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AdminController as Controller;
-use Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
+use Modules\Auth\Http\Requests\ForgotPasswordRequest;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Http\Requests\ResetPasswordRequest;
 use Modules\Auth\Services\AuthService;
+use Modules\Auth\Services\PasswordService;
 
 abstract class AuthController extends Controller
 {
 
     private AuthService $authService;
+    private PasswordService $passwordService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(AuthService $authService, PasswordService $passwordService)
     {
         $this->authService = $authService;
+        $this->passwordService = $passwordService;
     }
+
+    /**
+     * Get the Login Page view
+     * @return String
+     */
+    abstract function loginPage(): String;
+
+    /**
+     * Get the Forgot Password Page view
+     * @return String
+     */
+    abstract function forgotPasswordPage(): String;
+
+    /**
+     * Get the Reset Password Page view
+     * @return String
+     */
+    abstract function resetPasswordPage(): String;
+
+    /**
+     * Get the Reset Password redirect link
+     * @return String
+     */
+    abstract function resetPasswordRedirect(): String;
+
+    /**
+     * Get the Home Page view
+     * @return String
+     */
+    abstract function homePage(): String;
 
     /**
      * Shows the login page
-     * @return Renderable
+     * @return Renderable|RedirectResponse
      */
-    public function showLogin() {
-        if ($this->authService->getCurrentUser()) {
-            return redirect()->to(RouteServiceProvider::HOME);
-        }
-        return view($this->loginPage());
+    public function showLogin(): Renderable|RedirectResponse {
+        return $this->authService->getCurrentUser() ? redirect()->to($this->homePage()) : view($this->loginPage());
     }
 
-    abstract function loginPage(): string;
-    abstract function forgotPasswordPage(): string;
-    abstract function resetPasswordPage(): string;
-    abstract function resetPasswordRedirect(): string;
-
     /**
-     * Tries to login the user
-     * @return Renderable
+     * Attemps to login the user
+     * @return RedirectResponse
      */
-    public function login(LoginRequest $request) {
+    public function login(LoginRequest $request): RedirectResponse {
         if ($this->authService->getCurrentUser()) {
             return redirect()->back();
         }
 
-        $validated = $request->validated();
-
         if (
             $this->authService->login(
-                $validated['username'],
-                $validated['password'],
-                $validated['remember']
+                $request->validated('username'),
+                $request->validated('password'),
+                $request->validated('remember')
             )
         ) {
             $request->session()->regenerate();
-
             $request->session()->put('locale', $this->authService->getCurrentUser()->locale);
 
-            return redirect()->to($validated['redirect']);
+            return redirect()->to($request->validated('redirect'));
         }
 
         return back()->withErrors([
@@ -76,13 +92,12 @@ abstract class AuthController extends Controller
 
     /** 
      * Logs the user out and redirects back to the previous page
+     * 
+     * @return RedirectResponse
      */
-    public function logout(Request $request)
-    {
+    public function logout(Request $request): RedirectResponse {
         if ($this->authService->logout()) {
-
             $request->session()->invalidate();
-
             $request->session()->regenerateToken();
 
             return redirect()->back();
@@ -94,31 +109,27 @@ abstract class AuthController extends Controller
     /**
      * Renders the forgot password page
      */
-    public function showForgotPassword() {
-        if ($this->authService->getCurrentUser()) {
-            return redirect()->back();
-        }
-        return view($this->forgotPasswordPage());
+    public function showForgotPassword(): Renderable {
+        return $this->authService->getCurrentUser() ? redirect()->back() : view($this->forgotPasswordPage());
     }
 
-    public function forgotPassword(Request $request) {
-        $request->validate(['email' => 'required|email']);
- 
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-     
+    public function forgotPassword(ForgotPasswordRequest $request): RedirectResponse {
+        $status = $this->passwordService->sendResetLink($request->validated('email'));
+
         return $status === Password::RESET_LINK_SENT
                     ? back()->with(['status' => __($status)])
                     : back()->withErrors(['email' => __($status)]);
     }
 
-    public function showResetPassword(Request $request, String $token) {
+    /**
+     * Renders the Rest Password page
+     */
+    public function showResetPassword(Request $request, String $token): Renderable {
         if ($this->authService->getCurrentUser()) {
             return redirect()->back();
         }
 
-        if ($this->checkToken($token, $request->input('email'))) {
+        if ($this->passwordService->checkResetPasswordToken($token, $request->input('email'))) {
             return view($this->resetPasswordPage(), [
                 'token' => $token
             ]);
@@ -129,36 +140,20 @@ abstract class AuthController extends Controller
         ]);
     }
 
-    public function resetPassword(ResetPasswordRequest $request) {
-        $validated = $request->validated();
-
-        $status = Password::reset($validated, function(User $user) {
-
-            $user->setRememberToken(Str::random(60));
-
-            $user->save();
-
-            event(new PasswordReset($user));
-        });
+    /**
+     * Resets the password
+     */
+    public function resetPassword(ResetPasswordRequest $request): RedirectResponse {
+        $status = $this->passwordService->resetPassword(
+            $request->validated('token'),
+            $request->validated('email'),
+            $request->validated('password'),
+            $request->validated('password_confirmation')
+        );
 
         return $status === Password::PASSWORD_RESET
             ? redirect($this->resetPasswordRedirect())->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
-    }
-
-    private function checkToken(string $token, string $email): bool
-    {
-
-        $password_resets = DB::table('password_reset_tokens')->where('email', $email)->first();
-
-        if ($password_resets &&  Hash::check($token, $password_resets->token)) {
-            $createdAt = Carbon::parse($password_resets->created_at);
-            if (!Carbon::now()->greaterThan($createdAt->addMinutes(config('auth.passwords.users.expire')))) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }

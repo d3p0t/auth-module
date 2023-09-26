@@ -2,10 +2,10 @@
 
 namespace Modules\Auth\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use D3p0t\Core\Requests\ModelRequest;
 use Modules\Auth\Entities\Role;
 
-class EditRoleRequest extends FormRequest
+class EditRoleRequest extends ModelRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -38,14 +38,14 @@ class EditRoleRequest extends FormRequest
         ]);
     }
 
-    public function toRole(): Role {
+    public function toModel(): Role {
         return new Role([
             'id'    => $this->validated('id'),
             'name'  => $this->validated('name')
         ]);
     }
 
-    public function toPermissions(): Array {
+    public function permissions(): Array {
         return $this->validated('permissions');
     }
 }

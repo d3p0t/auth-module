@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers\Public;
 
+use App\Providers\RouteServiceProvider;
 use Modules\Auth\Http\Controllers\AuthController as Controller;
 
 class AuthController extends Controller
@@ -25,5 +26,10 @@ class AuthController extends Controller
 
     public function resetPasswordRedirect(): string {
         return 'auth/login';
+    }
+
+    public function homePage(): string
+    {
+        return RouteServiceProvider::HOME;
     }
 }

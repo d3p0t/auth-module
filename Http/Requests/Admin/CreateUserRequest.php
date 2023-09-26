@@ -2,11 +2,11 @@
 
 namespace Modules\Auth\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use D3p0t\Core\Requests\ModelRequest;
 use Illuminate\Validation\Rule;
 use Modules\Auth\Entities\User;
 
-class CreateUserRequest extends FormRequest
+class CreateUserRequest extends ModelRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -35,7 +35,7 @@ class CreateUserRequest extends FormRequest
     }
 
 
-    public function toUser(): User {
+    public function toModel(): User {
         return new User([
             'username'  => $this->validated('username'),
             'name'      => $this->validated('name'),
@@ -45,7 +45,7 @@ class CreateUserRequest extends FormRequest
         ]);
     }
 
-    public function toRole(): int {
+    public function role(): int {
         return intval($this->validated('role'));
     }
 }

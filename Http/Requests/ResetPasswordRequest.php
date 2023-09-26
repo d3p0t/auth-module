@@ -29,7 +29,6 @@ class ResetPasswordRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
-        //return Auth::guest();
+        return Auth::guest();
     }
 }

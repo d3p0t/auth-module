@@ -2,6 +2,7 @@
 
 namespace Modules\Auth\Http\Controllers\Admin;
 
+use App\Providers\RouteServiceProvider;
 use Modules\Auth\Http\Controllers\AuthController as Controller;
 
 class AuthController extends Controller
@@ -26,4 +27,8 @@ class AuthController extends Controller
         return 'admin/auth/login';
     }
 
+    public function homePage(): string
+    {
+        return RouteServiceProvider::ADMIN;
+    }
 }

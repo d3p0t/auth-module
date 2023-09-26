@@ -25,7 +25,7 @@ class RoleController extends Controller
     public function index()
     {
         //
-        return $this->roleService->all();
+        return $this->roleService->getAll();
     }
 
     /**
@@ -42,7 +42,7 @@ class RoleController extends Controller
         $permissions = $request->get('permissions', []);
 
         return response()
-            ->json($this->roleService->createRole($role, $permissions));
+            ->json($this->roleService->create($role, $permissions));
     }
 
     /**
@@ -56,13 +56,6 @@ class RoleController extends Controller
 
         return response()
             ->json($role);
-            /*
-            ->json([
-                'id'            => $role->id,
-                'name'          => $role->name,
-                'permissions'   => $role->permissions
-            ]);
-            */
     }
 
     /**
@@ -82,7 +75,7 @@ class RoleController extends Controller
         $permissions = $request->get('permissions', []);
 
         return response()
-            ->json($this->roleService->updateRole($role, $permissions));
+            ->json($this->roleService->update($role, $permissions));
     }
 
     /**

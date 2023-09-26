@@ -3,8 +3,8 @@
 namespace Modules\Auth\Services;
 
 use App\Exceptions\ModelValidationException;
-use App\Pageable\Pageable;
-use App\Pageable\PageRequest;
+use D3p0t\Core\Pageable\Pageable;
+use D3p0t\Core\Pageable\PageRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Validation\ValidationException;
@@ -17,7 +17,7 @@ class RoleService {
      * Get all the Roles
      * @return Collection
      */
-    public function all(): Collection {
+    public function getAll(): Collection {
         return Role::all();
     }
      
@@ -29,7 +29,7 @@ class RoleService {
      * 
      * @return LengthAwarePaginator
      */
-    public function searchRoles(Array $searchCriteria, PageRequest $pageRequest): Pageable {
+    public function search(Array $searchCriteria, PageRequest $pageRequest): Pageable {
         $query = Role::where(function($q) use ($searchCriteria) {
             if (array_key_exists('name', $searchCriteria)) {
                 $q->where('name', 'LIKE', '%' . $searchCriteria['name'] . '%');
@@ -68,7 +68,7 @@ class RoleService {
      * 
      * @return Role
      */
-    public function createRole(Role $role, Array $permissions): Role {
+    public function create(Role $role, Array $permissions): Role {
         try {
             $role->guard_name = 'web';
             $role->is_internal = false;
@@ -89,7 +89,7 @@ class RoleService {
      * 
      * @return Role
      */
-    public function updateRole(Role $role, Array $permissions): Role {
+    public function update(Role $role, Array $permissions): Role {
         try {
             if ($this->getById($role->id)->update([
                 'name'  => $role->name
@@ -111,7 +111,7 @@ class RoleService {
      * 
      * @return bool
      */
-    public function deleteRole(int $id): bool {
+    public function delete(int $id): bool {
         $role = $this->getById($id);
 
         if (!$role->users->isEmpty()) {

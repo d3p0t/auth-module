@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use Modules\Auth\Http\Controllers\Api\UserController;
+use Modules\Auth\Http\Controllers\Api\AuthController;
 use Modules\Auth\Http\Controllers\Api\PermissionController;
 use Modules\Auth\Http\Controllers\Api\RoleController;
 
@@ -17,9 +18,14 @@ use Modules\Auth\Http\Controllers\Api\RoleController;
 
 
 Route::prefix('auth')->group(function() {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/user', [AuthController::class, 'getCurrentUser'])->middleware('auth:sanctum');
+    Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('permissions', PermissionController::class)
         ->except(['create', 'store', 'update', 'destroy']);
+    });
+    Route::apiResource('users', UserController::class);
 });
 
 

@@ -31,7 +31,7 @@ class UserController extends Controller
         return view(
             'auth::admin/users/index',
             [
-                'users' => $this->userService->searchUsers(
+                'users' => $this->userService->search(
                     [],
                     PageRequest::fromRequest($pageableRequest, $sortableRequest)
                 )
@@ -43,15 +43,15 @@ class UserController extends Controller
         return view(
             'auth::admin/users/create',
             [
-                'roles' => $this->roleService->all()
+                'roles' => $this->roleService->getAll()
             ]
         );
     }
 
     public function store(CreateUserRequest $request) {
-        $user = $this->userService->createUser(
-            $request->toUser(),
-            $this->roleService->getById($request->toRole())
+        $user = $this->userService->create(
+            $request->toModel(),
+            $request->role()
         );
 
         return redirect('/admin/auth/users')
@@ -62,16 +62,16 @@ class UserController extends Controller
         return view(
             'auth::admin/users/edit',
             [
-                'user'          => $this->userService->getUserById($id),
-                'roles'         => $this->roleService->all()
+                'user'          => $this->userService->getById($id),
+                'roles'         => $this->roleService->getAll()
             ]
         );
     }
 
     public function update(EditUserRequest $request) {
-        $user = $this->userService->updateUser(
+        $user = $this->userService->update(
             $request->toUser(),
-            $this->roleService->getById($request->toRole())
+            $request->role()
         );
 
         return redirect('/admin/auth/users')
@@ -79,7 +79,7 @@ class UserController extends Controller
     }
 
     public function delete(int $id) {
-        if (!$this->userService->deleteUser($id)) {
+        if (!$this->userService->delete($id)) {
             return redirect('/admin/auth/users')
                 ->withErrors('status', 'Cannot delete user');
         }

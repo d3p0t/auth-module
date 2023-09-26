@@ -2,10 +2,10 @@
 
 namespace Modules\Auth\Http\Requests\Admin;
 
-use Illuminate\Foundation\Http\FormRequest;
+use D3p0t\Core\Requests\ModelRequest;
 use Modules\Auth\Entities\User;
 
-class EditUserRequest extends FormRequest
+class EditUserRequest extends ModelRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -39,7 +39,7 @@ class EditUserRequest extends FormRequest
         ]);
     }
 
-    public function toUser(): User {
+    public function toModel(): User {
         return new User([
             'id'        => intval($this->validated('id')),
             'username'  => $this->validated('username'),
@@ -48,7 +48,7 @@ class EditUserRequest extends FormRequest
         ]);
     }
 
-    public function toRole(): int {
+    public function role(): int {
         return intval($this->validated('role'));
     }
 }

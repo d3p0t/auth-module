@@ -1,4 +1,4 @@
-@extends('layouts.admin.admin')
+@extends('layouts.admin.app')
 
 @section('content')
     <section class="page">
@@ -7,9 +7,11 @@
         </h1>
         <div class="page__actions">
             @can('create roles')
-                <x-button type="link" color="primary" href="/admin/auth/roles/create">
-                    {{ __('auth::roles.create.title') }}
-                </x-button>
+                <a href="{{ route('auth::admin.roles.create') }}">
+                    <mwc-button raised color="primary">
+                        {{ __('auth::roles.create.title') }}
+                    </mwc-button>
+                </a>
             @endcan
         </div>
         <div class="page__content">
@@ -37,15 +39,19 @@
                                         -
                                     @else
                                         @can('update roles')
-                                            <x-button type="link" href="/admin/auth/roles/edit/{{ $role->id }}">
-                                                {{ __('common.edit') }}
-                                            </x-button>
+                                            <a href="{{ route('auth::admin.roles.edit', $role->id) }}">
+                                                <mwc-button color="primary">
+                                                    {{ __('common.edit') }}
+                                                </mwc-button>
+                                            </a>
                                         @endcan
                                         @if ($role->users->isEmpty())
                                             @can('delete roles')
-                                                <x-button type="link" href="/admin/auth/roles/delete/{{ $role->id }}">
-                                                    {{ __('common.delete') }}
-                                                </x-button>
+                                                <a href="{{ route('auth::admin.roles.delete', $role->id) }}">
+                                                    <mwc-button color="primary">
+                                                        {{ __('common.delete') }}
+                                                    </mwc-button>
+                                                </a>
                                             @endcan
                                         @endif
                                     @endif

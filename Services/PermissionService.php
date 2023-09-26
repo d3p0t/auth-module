@@ -10,7 +10,7 @@ class PermissionService {
      * Get all the Permissions
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getPermissions(): \Illuminate\Database\Eloquent\Collection {
+    public function getAll(): \Illuminate\Database\Eloquent\Collection {
         return Permission::all();
     }
 

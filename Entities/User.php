@@ -2,25 +2,24 @@
 
 namespace Modules\Auth\Entities;
 
+use D3p0t\Core\Auth\Entities\Principal;
 use Enigma\ValidatorTrait;
+use Laravel\Sanctum\HasApiTokens;
 use Modules\Auth\Notifications\ResetPassword;
-use Modules\Core\Entities\Principal;
-use Laravel\Passport\HasApiTokens;
-
 
 class User extends Principal
 {
 
     use ValidatorTrait, HasApiTokens;
 
-    protected String $table = 'auth__users';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected Array $fillable = [
+    protected $fillable = [
         'id',
         'username',
         'name',
@@ -33,7 +32,7 @@ class User extends Principal
      *
      * @var array<int, string>
      */
-    protected Array $hidden = [
+    protected $hidden = [
         'password',
         'remember_token',
     ];
@@ -43,7 +42,7 @@ class User extends Principal
      *
      * @var array<string, string>
      */
-    protected Array $casts = [
+    protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
@@ -68,12 +67,15 @@ class User extends Principal
         'name.required' => 'Name field is required.',
         'email.required' => 'Email field is required',
         'email.email' => 'The given email is in invalid format.',
+        'username.required' => 'The username is required',
+        'username.unique'   => 'The username already exists'
     ];
 
     public $validationAttributes = [
-        'name' => 'User Name'
+        'name' => 'Name',
+        'email' => 'Email',
+        'username'  => 'Username'
     ];
-
 
     public function sendPasswordResetNotification($token)
     {

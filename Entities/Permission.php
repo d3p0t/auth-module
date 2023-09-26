@@ -4,11 +4,13 @@ namespace Modules\Auth\Entities;
 
 use Enigma\ValidatorTrait;
 use Spatie\Permission\Models\Permission as Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Permission extends Model
 {
 
-    use ValidatorTrait;
+    use ValidatorTrait, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -38,4 +40,8 @@ class Permission extends Model
     ];
 
 
+    public function getActivitylogOptions(): LogOptions {
+        return LogOptions::defaults()
+            ->logOnly(['name']);
+    }
 }

@@ -3,9 +3,9 @@
 namespace Modules\Auth\Http\Controllers\Admin;
 
 use App\Http\Controllers\AdminController as Controller;
-use App\Http\Requests\PageableRequest;
-use App\Http\Requests\SortableRequest;
-use App\Pageable\PageRequest;
+use D3p0t\Core\Pageable\PageRequest;
+use D3p0t\Core\Pageable\Requests\PageableRequest;
+use D3p0t\Core\Pageable\Requests\SortableRequest;
 use Gate;
 use Modules\Auth\Http\Requests\Admin\CreateRoleRequest;
 use Modules\Auth\Http\Requests\Admin\EditRoleRequest;
@@ -34,7 +34,7 @@ class RoleController extends Controller
         return view(
             'auth::admin/roles/index',
             [
-                'roles' => $this->roleService->searchRoles(
+                'roles' => $this->roleService->search(
                     $searchCriteria,
                     PageRequest::fromRequest($pageableRequest, $sortableRequest)
                 )
@@ -42,12 +42,11 @@ class RoleController extends Controller
         );
     }
 
-
     public function create() {
         return view(
             'auth::admin/roles/create',
             [
-                'permissions'   => $this->permissionService->getPermissions()
+                'permissions'   => $this->permissionService->getAll()
             ]
         );
     }
@@ -59,15 +58,15 @@ class RoleController extends Controller
             'auth::admin/roles/edit',
             [
                 'role'          => $this->roleService->getById($id),
-                'permissions'   => $this->permissionService->getPermissions()
+                'permissions'   => $this->permissionService->getAll()
             ]
-            );
+        );
     }
 
     public function store(CreateRoleRequest $request) {
-        $role = $this->roleService->createRole(
-            $request->toRole(),
-            $request->toPermissions()
+        $role = $this->roleService->create(
+            $request->toModel(),
+            $request->permissions()
         );
 
         return redirect()
@@ -76,11 +75,9 @@ class RoleController extends Controller
     }
 
     public function update(EditRoleRequest $request) {
-
-        $role = $this->roleService->updateRole(
-            $request->toRole(),
-            $request->toPermissions()
-    
+        $role = $this->roleService->update(
+            $request->toModel(),
+            $request->permissions()
         );
 
         return redirect()
@@ -89,7 +86,7 @@ class RoleController extends Controller
     }
 
     public function delete(int $id) {
-        if ($this->roleService->deleteRole($id)) {
+        if ($this->roleService->delete($id)) {
             return redirect()
                 ->route('auth::admin.roles.index')
                 ->with('status', __('auth::roles.actions.deleted'));

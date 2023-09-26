@@ -2,11 +2,13 @@
 
 namespace Modules\Auth\Http\Requests\Admin;
 
+use D3p0t\Core\Requests\ModelRequest;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Modules\Auth\Entities\Role;
 
-class CreateRoleRequest extends FormRequest
+class CreateRoleRequest extends ModelRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -37,15 +39,14 @@ class CreateRoleRequest extends FormRequest
         ]);
     }
 
-    public function toRole(): Role {
-        $role = new Role([
+    public function toModel(): Role {
+        return new Role([
             'name'  => $this->validated('name')
         ]);
 
-        return $role;
     }
 
-    public function toPermissions(): Array {
+    public function permissions(): Array {
         return $this->validated(['permissions']);
     }
 }

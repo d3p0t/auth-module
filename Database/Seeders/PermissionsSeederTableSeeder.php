@@ -5,6 +5,7 @@ namespace Modules\Auth\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PermissionsSeederTableSeeder extends Seeder
 {
@@ -17,13 +18,32 @@ class PermissionsSeederTableSeeder extends Seeder
     {
         Model::unguard();
 
-        DB::table('permissions')->insert([
-            'name'          => 'admin',
-            'module'        => '',
-            'guard_name'    => 'web'
-        ]);
+        $permissions = [
+            'auth',
+            'view roles',
+            'create roles',
+            'update roles',
+            'delete roles',
+            'view users',
+            'create users',
+            'update users',
+            'delete users',
+        ];
+        
+        $tableNames = config('permission.table_names');
 
+        if (Schema::hasTable($tableNames['permissions']))
+        {
+            
+            foreach ($permissions as $permission) {
+                DB::table($tableNames['permissions'])->insert([
+                    'name'          => $permission,
+                    'module'        => 'auth',
+                    'guard_name'    => 'web'
+                ]);
+            }
 
-        // $this->call("OthersTableSeeder");
+        }
+
     }
 }

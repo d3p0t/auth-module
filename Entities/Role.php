@@ -4,11 +4,13 @@ namespace Modules\Auth\Entities;
 
 use Enigma\ValidatorTrait;
 use Spatie\Permission\Models\Role as Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Role extends Model
 {
 
-    use ValidatorTrait;
+    use ValidatorTrait, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -38,6 +40,9 @@ class Role extends Model
         'name.unique' => 'Name must be unique',
     ];
 
+    public function getActivitylogOptions(): LogOptions {
+        return LogOptions::defaults()
+            ->logOnly(['name']);
+    }
 
 }
-
