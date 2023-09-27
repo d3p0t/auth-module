@@ -21,17 +21,20 @@ Route::prefix('auth')->group(function() {
     Route::group([
         'excluded_middleware' => ['auth', 'permission:admin'],
     ], function() {
-        Route::get('/login', [AuthController::class, 'showLogin']);
+        Route::get('/login', [AuthController::class, 'showLogin'])->name('auth::admin.login.show');
         Route::post('/login', [AuthController::class, 'login'])->name('auth::admin.login');
-        Route::get('/logout', [AuthController::class, 'logout']);
-        Route::get('/forgot-password', [AuthController::class, 'showForgotPassword']);
-        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('admin.password-reset');
-        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+        Route::get('/logout', [AuthController::class, 'logout'])->name('auth::admin.logout');
+        Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('auth::admin.forgot-password.show');
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('auth::admin.forgot-password');
+        Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('auth::admin.reset-password.show');
+        Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('auth::admin.reset-password');
     });
 
+    Route::get('/change-password', [AuthController::class, 'showChangePassword'])->middleware('auth')->name('auth::admin.change-password.show');
+    Route::post('/change-password',[AuthController::class, 'changePassword'])->middleware('auth')->name('auth::admin.change-password');
+
     Route::prefix('users')->group(function() {
-        Route::get('/', [UserController::class, 'index'])->middleware('can:view users')->name('adth::admin.users.index');
+        Route::get('/', [UserController::class, 'index'])->middleware('can:view users')->name('auth::admin.users.index');
         Route::get('/create', [UserController::class, 'create'])->middleware('can:create users')->name('auth::admin.users.create');
         Route::post('/create', [UserController::class, 'store'])->middleware('can:create users')->name('auth::admin.users.store');
         Route::get('/edit/{id}', [UserController::class, 'edit'])->middleware('can:update users')->name('auth::admin.users.edit');

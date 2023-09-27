@@ -3,7 +3,9 @@
 namespace Modules\Auth\Entities;
 
 use D3p0t\Core\Auth\Entities\Principal;
+use D3p0t\Core\Entities\Notification;
 use Enigma\ValidatorTrait;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Auth\Notifications\ResetPassword;
 
@@ -89,9 +91,10 @@ class User extends Principal
         $this->notify(new ResetPassword($url));
     }
 
-    public function findForPassport(string $username): User
+    public function notifications(): MorphMany
     {
-        return $this->where('username', $username)->first();
+        return $this->morphMany(Notification::class, 'recipient');
     }
+
 }
 

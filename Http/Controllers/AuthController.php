@@ -7,6 +7,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Modules\Auth\Http\Requests\ChangePasswordRequest;
 use Modules\Auth\Http\Requests\ForgotPasswordRequest;
 use Modules\Auth\Http\Requests\LoginRequest;
 use Modules\Auth\Http\Requests\ResetPasswordRequest;
@@ -55,6 +56,12 @@ abstract class AuthController extends Controller
      */
     abstract function homePage(): String;
 
+    /**
+     * Get the Change Password view
+     * @return String
+     */
+    abstract function changePasswordPage(): String;
+    
     /**
      * Shows the login page
      * @return Renderable|RedirectResponse
@@ -154,6 +161,16 @@ abstract class AuthController extends Controller
         return $status === Password::PASSWORD_RESET
             ? redirect($this->resetPasswordRedirect())->with('status', __($status))
             : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    public function changePassword(ChangePasswordRequest $request): RedirectResponse {
+        $this->passwordService->changePassword(
+            $this->authService->getCurrentUser(),
+            $request->password()
+        );
+
+        return redirect()->back()
+            ->with('status', 'Password is changed');
     }
 
 }

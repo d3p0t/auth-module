@@ -2,12 +2,13 @@
 
 namespace Modules\Auth\Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class PermissionsSeederTableSeeder extends Seeder
+class PermissionsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -39,7 +40,8 @@ class PermissionsSeederTableSeeder extends Seeder
                 DB::table($tableNames['permissions'])->insert([
                     'name'          => $permission,
                     'module'        => 'auth',
-                    'guard_name'    => 'web'
+                    'guard_name'    => 'web',
+                    'created_at'    => Carbon::now()->format('Y-m-d H:i:s')
                 ]);
             }
 

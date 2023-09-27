@@ -69,4 +69,10 @@ class PasswordService {
             event(new PasswordReset($user));
         });
     }
+
+    public function changePassword(User $user, String $password): bool {
+        $user->password = Hash::make($password);
+
+        return $user->save();
+    }
 }

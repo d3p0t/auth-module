@@ -10,17 +10,21 @@ class AuthController extends Controller
     
     public function loginPage(): string
     {
-        return 'auth::admin.auth.login';
+        return 'auth::admin.login.show';
     }
 
     public function forgotPasswordPage(): string
     {
-        return 'auth::admin.auth.forgot-password';
+        return 'auth::admin.forgot-password.show';
     }
 
     public function resetPasswordPage(): string
     {
-        return 'auth::admin.auth.reset-password';
+        return 'auth::admin.reset-password.show';
+    }
+
+    public function changePasswordPage(): string {
+        return 'auth::admin.change-password.show';
     }
 
     public function resetPasswordRedirect(): string {
