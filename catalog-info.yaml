@@ -8,8 +8,8 @@ metadata:
       github.com/project-slug: 'd3p0t/auth-module'
   tags:
     - php
-    - D3p0t
-    - Library
+    - d3p0t
+    - library
 spec:
   type: library
   owner: D3p0t
