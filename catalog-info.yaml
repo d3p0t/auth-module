@@ -6,6 +6,7 @@ metadata:
   description: An example deployment of a Backstage application.
   annotations:
       github.com/project-slug: 'd3p0t/auth-module'
+      backstage.io/techdocs-ref: dir:.
   tags:
     - php
     - d3p0t
