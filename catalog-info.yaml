@@ -12,3 +12,8 @@ spec:
   lifecycle: experimental
   dependsOn:
     - component:d3p0t-core
+
+tags:
+  - php
+  - D3p0t
+  - Library
