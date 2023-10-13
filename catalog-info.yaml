@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  namespace: default
+  name: D3p0t-Auth-Module
+  description: An example deployment of a Backstage application.
+spec:
+  type: library
+  owner: D3p0t
+  lifecycle: experimental
+  dependsOn:
+    - d3p0t-core
