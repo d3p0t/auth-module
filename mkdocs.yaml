@@ -1,0 +1,4 @@
+site_name: 'D3p0t Auth Module'
+
+plugins:
+  - techdocs-core
