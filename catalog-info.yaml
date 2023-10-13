@@ -6,14 +6,13 @@ metadata:
   description: An example deployment of a Backstage application.
   annotations:
       github.com/project-slug: 'd3p0t/auth-module'
+  metadata:
+    - php
+    - D3p0t
+    - Library
 spec:
   type: library
   owner: D3p0t
   lifecycle: experimental
   dependsOn:
     - component:d3p0t-core
-
-tags:
-  - php
-  - D3p0t
-  - Library
