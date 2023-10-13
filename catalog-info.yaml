@@ -9,4 +9,4 @@ spec:
   owner: D3p0t
   lifecycle: experimental
   dependsOn:
-    - d3p0t-core
+    - component:d3p0t-core
