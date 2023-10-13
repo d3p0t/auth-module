@@ -4,6 +4,8 @@ metadata:
   namespace: default
   name: D3p0t-Auth-Module
   description: An example deployment of a Backstage application.
+  annotations:
+      github.com/project-slug: 'd3p0t/auth-module'
 spec:
   type: library
   owner: D3p0t
